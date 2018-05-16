@@ -12,6 +12,9 @@
 
 \begin{document}
 
+\renewcommand{\refname}{} % remove references title
+
+
 \title{CS-E5890 - Statistical Genetics and Personalised Medicine \\ Machine learning in neonatal intensive care}
 
 \author{Maximilian Proll \and Michele Vantini}
@@ -76,7 +79,7 @@ The following subsections give a short explanation of the different methods used
 
 \subsection*{Logistic Regression}
 
-Logistic regression is a regression model where the dependent variable is categorical. In our case the dependent variable is a binary variable. But logistic regression can also be applied to cases where the dependent variable has more than two outcome categories, it is then called multinomial logistic regression.
+Logistic regression is a regression model where the dependent variable is categorical. In our case the dependent variable is a binary variable. But logistic regression can also be applied to cases where the dependent variable has more than two outcome categories, it is then called multinomial logistic regression \cite{freedman2005statistical}.
 
 Logistic regression uses a  predictor map $ h(.)$ with $h ( \mathbf { x } ) \in [ 0,1] $. One common choice for the predictor function $h$ is the so-called sigmoid function $ \sigma ( z ) $:
 $$ h ^ { ( \mathbf { w } ,b ) } ( \mathbf { x } ) = \sigma \left( \mathbf { w } ^ { T } \mathbf { x } + b \right) \text{ with } \sigma ( z ) : = \frac{1}{1+ \exp ( - z )}  $$
@@ -85,30 +88,34 @@ In contrast to linear regression there is no closed form solution for the cost-m
 
 \subsection*{Decision Trees}
 
-Decision trees are very a very useful tool when predicting a target value as a trained decision tree is simple to understand and to interpret. Classification trees are a type of tree models where the target variable is a discrete set of values. In these tree structures, the leaves represent those class labels and branches represent conjunctions of features that lead to those class labels.
+Decision trees are a very useful tool when predicting a target value as a trained decision tree is simple to understand and to interpret. Classification trees are a type of tree models where the target variable is a discrete set of values. In these tree structures, the leaves represent those class labels and branches represent conjunctions of features that lead to those class labels \cite{Rokach:2014:DMD:2755359}.
 
 When constructing or learning the tree structure the algorithm generally work top-down and choose those conjunctions of features at each step that best splits the set of items. Depending on the algorithm different metrics are used to choose the 'best' conjunction of features. But generally these metrics measure the homogeneity of the target variable within the subsets.
 
 \subsection*{Support Vector Machine}
 
-Support Vector Machines (SVM) construct a hyperplane in a high- dimensional space, which then is  used for classification or regression. The premise of SVM is to select a particular hyperplane which results in a  good separation of training points. A good separation is achieved by a hyperplane that has the largest distance to the nearest training-data point of any class. In other words SVM finds those hyperplane that maximise the  functional margin. After the training a SVM are used to categorise the test data according to on which side of the hyperplane the prediction lies.
+Support Vector Machines (SVM) construct a hyperplane in a high- dimensional space, which then is  used for classification or regression \cite{Cortes1995}. The premise of SVM is to select a particular hyperplane which results in a  good separation of training points. A good separation is achieved by a hyperplane that has the largest distance to the nearest training-data point of any class. In other words SVM finds those hyperplane that maximise the  functional margin. After the training a SVM are used to categorise the test data according to on which side of the hyperplane the prediction lies.
 
 \subsection*{Gaussian Naive Bayes}
 
-In general naive Bayes classifiers are the Bayesian adaptation of a probabilistic classifiers, they apply Bayes' theorem with strong (\textit{naive}) independence assumptions between the features.
+In general naive Bayes classifiers are the Bayesian adaptation of a probabilistic classifiers, they apply Bayes' theorem with strong (\textit{naive}) independence assumptions between the features \cite{10.2307/1403452}.
 For continuous data one typically assumes a gaussian distribution of the data within each class.
 
 First the data has to be segmented by the class, then the mean and variance in each class has to be computed. $ \mu _{k}$ is the mean of the values in $x$ and  $ \sigma _{k}^{2}$ denotes the variance of the values in $x$ associated with class $C_k$.
 The probability of some observation value $v$ given a class $C_{k}$ follows then Normal distribution parameterised by $\mu _{k}$ and $\sigma _{k}^{2}$:
 $$  p(x=v\mid C_{k})={\frac {1}{\sqrt {2\pi \sigma _{k}^{2}}}}\,e^{-{\frac {(v-\mu _{k})^{2}}{2\sigma _{k}^{2}}}} $$
 
-%\subsection*{Gaussian Processes}
+\subsection{Gaussian Processes Classification}
+Gaussian processes(GP), other than for regression task, can be used also for classification\cite{MacKay:2002:ITI:971143}. Essentially, what we have to change from the regression case, that consist of using a Gaussian Process as prior distribution for the model, is using a "squashing function" $\phi:\mathcal{R}\rightarrow(0,1)$ in this way:
+\[ p(y_n\mid x_n) = \phi(y_n\cdot f(x_n)) \]
+where $y_n\in\{-1,1\}$. In this way the output of the GP is mapped to the probability of belonging to one of the two classes $\{-1,1\}$. The common form used for the squashing function is a Gaussian CDF:
+\[ \phi(x) = \int_{-\inf}^x \mathcal{N}(z\mid 0,1)dz \]
 
 \subsection{Modelling of basic data}
 In the case of the basic data, we can build classifiers on the base of the two collected features gestational age at birth $ga$ and birth weight $bw$. Therefore, we applied and assessed the above reported classification methods. For assessing each individual classifier, we verified some of the most common score that can be computed during the training, namely mis-classification count, precision, recall, and accuracy. However, we spent time also checking visually that the classifier produced meaningful results. This visual check can be done by plotting the classification results on the test set and verify that graphically they resemble the training set. The objective is to select sensible classifier for this particular task. After checking both the scores and the results on the test set, the selected classifiers become part of a voting system. In this voting system it is sufficient that only one classifier labels a data point as "died", to have "died" as final classification for that data point. From a medical prospective, this is a safe choice, since it reduces the possibility of false negative.
 
 \subsection{Modelling time-series data}
-In order to model time-series data, we decided to extract the following statistics from each time-series:
+In order to model time-series data, we decided to extract the following statistics from each time-series \cite{GP-class}:
 \begin{itemize}
     \item Mean and variance
     \item Intercept and slope of linear regression on the data
@@ -160,7 +167,7 @@ By combining the predictions of the different classifiers, we obtain the results
 \end{figure}
 
 \subsection{Time-series data}\label{sec:res_ts_data}
-As for the basic data, the score of the tested method on the training set are reported in Table~\ref{tab:tsscores}. Average mis-classification count, precision, recall and accuracy over the results of 5-fold cross validation on the training set are reported. In addition, in Figure~\ref{fig:tstest} the results on the test set for the different classifier are presented. It is important to notice that the results of the classification has been plotted in the feature space of the basic data in order to get a meaningful visualization. Regarding Figure~\ref{fig:combtest} we did not include the Gaussian Naive Bayes classifier as it provides a very aggressive classification.
+As for the basic data, the score of the tested method on the training set are reported in Table~\ref{tab:tsscores}. Average mis-classification count, precision, recall and accuracy over the results of 5-fold cross validation on the training set are reported. In addition, in Figure~\ref{fig:tstest} the results on the test set for the different classifier are presented. It is important to notice that the results of the classification has been plotted in the feature space of the basic data in order to get a meaningful visualization. Regarding Figure~\ref{fig:tscomb} we did not include the Gaussian Naive Bayes classifier as it provides a very strange classification, indeed there are definitely too many deaths.
 
 \begin{table}[H]
     \centering
@@ -191,12 +198,12 @@ By combining the predictions of the different classifiers, we obtain the results
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{ts_combined.png}
-    \caption{Classification results obtained by combining the opinions of different classifiers on the test set}
+    \caption{Classification results obtained by combining the opinions of different classifiers on the test set (Gaussian Naive Bayes excluded)}
     \label{fig:tscomb}
 \end{figure}
 
 \subsection{Basic data and time-series data combined}\label{sec:res_comb_data}
-As for the basic and time-series data, the score of the tested method on the training set are reported in Table~\ref{tab:combscores}. Average mis-classification count, precision, recall and accuracy over the results of 5-fold cross validation on the training set are reported. In addition, in Figure~\ref{fig:combtest} the results on the test set for the different classifier are presented. It is important to notice that the results of the classification has been plotted in the feature space of the basic data in order to get a meaningful visualization. Regarding Figure~\ref{fig:combtest} we did not include the Gaussian Naive Bayes classifier as it provides a very aggressive classification.
+As for the basic and time-series data, the score of the tested method on the training set are reported in Table~\ref{tab:combscores}. Average mis-classification count, precision, recall and accuracy over the results of 5-fold cross validation on the training set are reported. In addition, in Figure~\ref{fig:combtest} the results on the test set for the different classifier are presented. It is important to notice that the results of the classification has been plotted in the feature space of the basic data in order to get a meaningful visualization. Regarding Figure~\ref{fig:comb} we did not include the Gaussian Naive Bayes classifier as it provides a very strange classification, indeed there are definitely too many deaths.
 
 \begin{table}[H]
     \centering
@@ -227,7 +234,7 @@ By combining the predictions of the different classifiers, we obtain the results
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{combined.png}
-    \caption{Classification results obtained by combining the opinions of different classifiers on the test set}
+    \caption{Classification results obtained by combining the opinions of different classifiers on the test set (Gaussian Naive Bayes excluded)}
     \label{fig:comb}
 \end{figure}
 
@@ -257,17 +264,21 @@ The task of this report was to predict in-hospital mortality based on simulated 
 We used various classifiers ranging from logistic regression and decision trees to SVMs and Gaussian naive Bayes and finally Gaussian processes to make a robust binary classification.
 Those classifiers were applied to the basic data set and the time-series data set alone and eventually to the combined data set. In order to gain one global prediction we merged the separate classifiers with the rule, that it is sufficient for a data point to be classified as "died" if only one classifier labels the data point as "died".
 
-As discussed in chapter \ref{sec:discussion} we can conclude that the basic data set alone is already giving a reasonably good amount of information for predicting in-hospital mortality. On the contrary the time-series data set does not contain enough information in order to build a robust classifier. Hence a pure reliance on the time-series data is not recommended and information covered in the basic data should be rather used.
+As discussed in Section~\ref{sec:discussion} we can conclude that the basic data set alone is already giving a reasonably good amount of information for predicting in-hospital mortality. On the contrary the time-series data set does not contain enough information in order to build a robust classifier. Hence a pure reliance on the time-series data is not recommended and information covered in the basic data should be rather used.
 
 When both data sets are combined the predictions are strongly influenced by the basic data set. Which is why we suggest to focus on gaining more information in the same style as the basic data set rather than time-series data. Other single-valued patient scores like Apgar, CRIB-II, SNAP-II or SNAPPE-II should be added for a more precise prediction of the in-hospital mortality. Values contained in those scores are generally easy to compute by hand and do not need special equipment. Examples of additional values are: skin color, pulse rate, activity, respiration effort, sex, admission temperature. There are many more values one could add to enrich the basic data and which help the mentioned classifies to give more accurate and robust predictions. 
 
-%\section{References}
-%\addcontentsline{toc}{section}{References}
-%\bibliographystyle{unsrt}
-%\bibliography{bib}
+\section{References}
+\addcontentsline{toc}{section}{References}
+\bibliographystyle{unsrt}
+\bibliography{bib}
 
 \section{Appendix}
+\subsection*{Appendix A}
 The following pages show our source code for building the classifiers. 
-
+\lstinputlisting[language=Python, basicstyle=\scriptsize]{classification.py}
+\subsection*{Appendix B}
+The following is the code for the feature extration from the time-series data.
+\lstinputlisting[language=Python, basicstyle=\scriptsize]{ts.py}
 
 \end{document}
